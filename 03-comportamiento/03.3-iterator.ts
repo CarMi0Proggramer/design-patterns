@@ -9,6 +9,12 @@
  * https://refactoring.guru/es/design-patterns/iterator
  */
 
+interface CustomIterator<T> {
+  hasNext(): boolean;
+  next(): T | null;
+  current(): T | null;
+}
+
 // Clase que representa una Carta de la baraja
 class Card {
   name: string;
@@ -28,11 +34,48 @@ class CardCollection {
     this.cards.push(card);
   }
 
-  //TODO: Implementación del iterador usando Symbol.iterator
-  // Symbol.iterator (): IterableIterator<Card>
+  *[Symbol.iterator](): IterableIterator<Card> {
+    yield* this.cards;
+  }
 
-  // TODO: Implementación del iterador usando Generadores
-  // *getCard(): IterableIterator<Card>
+  *getCard(): IterableIterator<Card> {
+    yield* this.cards;
+  }
+
+  getCardAt(index: number): Card | null {
+    if (this.cards[index]) {
+      return this.cards[index];
+    }
+
+    return null;
+  }
+
+  createIterator(): CardIterator {
+    return new CardIterator(this);
+  }
+}
+
+class CardIterator implements CustomIterator<Card> {
+  constructor(
+    private collection: CardCollection,
+    private position: number = 0
+  ) {}
+
+  hasNext(): boolean {
+    if (this.collection.getCardAt(this.position + 1)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  next(): Card | null {
+    return this.collection.getCardAt(this.position++);
+  }
+
+  current(): Card | null {
+    return this.collection.getCardAt(this.position);
+  }
 }
 
 // Código Cliente para probar el iterador
@@ -41,15 +84,23 @@ function main(): void {
   const deck = new CardCollection();
 
   // Agregar algunas cartas a la colección
-  deck.addCard(new Card('As de Corazones', 1));
-  deck.addCard(new Card('Rey de Corazones', 13));
-  deck.addCard(new Card('Reina de Corazones', 12));
-  deck.addCard(new Card('Jota de Corazones', 11));
+  deck.addCard(new Card("As de Corazones", 1));
+  deck.addCard(new Card("Rey de Corazones", 13));
+  deck.addCard(new Card("Reina de Corazones", 12));
+  deck.addCard(new Card("Jota de Corazones", 11));
 
   // Recorrer la colección en orden usando for...of
-  console.log('Recorriendo la colección de cartas:');
+  console.log("Recorriendo la colección de cartas:");
   for (const card of deck) {
     console.log(`Carta: ${card.name}, Valor: ${card.value}`);
+  }
+
+  const cardIterator = deck.createIterator();
+
+  while (cardIterator.hasNext()) {
+    const card = cardIterator.next()!;
+
+    console.log(`Card: ${card.name}`);
   }
 }
 
