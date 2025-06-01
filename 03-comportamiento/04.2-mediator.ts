@@ -29,7 +29,7 @@
     notificándoles de la actividad de cada avión.
  */
 
-import { COLORS } from '../helpers/colors.ts';
+import { COLORS } from "../helpers/colors.ts";
 
 // Clase Mediador - ControlTower
 class ControlTower {
@@ -37,11 +37,17 @@ class ControlTower {
 
   // Registrar un avión en la torre de control
   // TODO: Implementar el método registerAirplane
-  // registerAirplane(airplane: Airplane)
+  registerAirplane(airplane: Airplane) {
+    this.airplanes.push(airplane);
+  }
 
   // Enviar un mensaje de un avión a todos los demás
   //TODO: Implementar el método sendMessage
-  // sendMessage(sender: Airplane, message: string): void
+  sendMessage(sender: Airplane, message: string): void {
+    this.airplanes
+      .filter((airplane) => airplane !== sender)
+      .forEach((airplane) => airplane.receiveMessage(sender, message));
+  }
 
   // Coordinación de aterrizaje
   requestLanding(sender: Airplane): void {
@@ -76,6 +82,7 @@ class Airplane {
     this.controlTower = controlTower;
 
     // TODO: Registrar el avión en la torre de control
+    this.controlTower.registerAirplane(this);
   }
 
   getId(): string {
@@ -87,6 +94,7 @@ class Airplane {
     console.log(`${this.id} solicita permiso para aterrizar.`);
 
     // TODO: Solicitar aterrizaje a la torre de control
+    this.controlTower.requestLanding(this);
   }
 
   // Solicitar despegue a la torre de control
@@ -94,6 +102,7 @@ class Airplane {
     console.log(`${this.id} solicita permiso para despegar.`);
 
     // TODO: Solicitar despegue a la torre de control
+    this.controlTower.requestTakeoff(this);
   }
 
   // Recibir mensaje de otros aviones
@@ -110,9 +119,9 @@ class Airplane {
 function main(): void {
   const controlTower = new ControlTower();
 
-  const airplane1 = new Airplane('Vuelo 101', controlTower);
-  const airplane2 = new Airplane('Vuelo 202', controlTower);
-  const airplane3 = new Airplane('Vuelo 303', controlTower);
+  const airplane1 = new Airplane("Vuelo 101", controlTower);
+  const airplane2 = new Airplane("Vuelo 202", controlTower);
+  const airplane3 = new Airplane("Vuelo 303", controlTower);
 
   // Ejemplo de interacciones
   airplane1.requestLanding();
