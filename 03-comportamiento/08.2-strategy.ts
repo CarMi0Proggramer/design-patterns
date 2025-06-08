@@ -12,6 +12,8 @@
  * https://refactoring.guru/es/design-patterns/strategy
  */
 
+import chalk from "chalk";
+
 /**
  * !Objetivo: 
  * Implementar el patrón Strategy para calcular los impuestos de diferentes países.
@@ -41,8 +43,6 @@
         para calcular los impuestos.
  */
 
-import { COLORS } from '../helpers/colors.ts';
-
 // Interfaz Strategy
 interface TaxStrategy {
   calculateTax(amount: number): number;
@@ -50,31 +50,33 @@ interface TaxStrategy {
 
 // Estrategia 1: Impuestos en USA
 class USATaxStrategy implements TaxStrategy {
-  // TODO: Implementar el método calculateTax = amount * 0.1
+  calculateTax(amount: number): number {
+    return amount * 0.1;
+  }
 }
 
 // Estrategia 2: Impuestos en Canada
 class CanadaTaxStrategy implements TaxStrategy {
-  // TODO: Implementar el método calculateTax = amount * 0.13
+  calculateTax(amount: number): number {
+    return amount * 0.13;
+  }
 }
 
 // Estrategia 3: Impuestos en Germany
 class GermanyTaxStrategy implements TaxStrategy {
-  // TODO: Implementar el método calculateTax = amount * 0.19
+  calculateTax(amount: number): number {
+    return amount * 0.19;
+  }
 }
 
 // Clase Contexto - TaxCalculator
 class TaxCalculator {
-  private strategy: TaxStrategy;
+  constructor(private strategy: TaxStrategy) {}
 
-  // TODO: Implementar el constructor recibiendo la estrategia a usar
-
-  // Cambiar la estrategia de cálculo de impuestos
   setStrategy(strategy: TaxStrategy): void {
     this.strategy = strategy;
   }
 
-  // Calcular impuestos
   calculate(amount: number): number {
     return this.strategy.calculateTax(amount);
   }
@@ -84,16 +86,16 @@ class TaxCalculator {
 function main(): void {
   const taxCalculator = new TaxCalculator(new USATaxStrategy());
 
-  console.log('%cCálculo de impuestos:\n', COLORS.red);
-  console.log('USA: $', taxCalculator.calculate(100).toFixed(2));
+  console.log(chalk.bold.green("Cálculo de impuestos:\n"));
+  console.log("USA: $", taxCalculator.calculate(100).toFixed(2));
 
-  console.log('\nCambiando a estrategia para Canada...');
+  console.log(chalk.bold.green("\nCambiando a estrategia para Canada..."));
   taxCalculator.setStrategy(new CanadaTaxStrategy());
-  console.log('Canada: $', taxCalculator.calculate(100).toFixed(2));
+  console.log("Canada: $", taxCalculator.calculate(100).toFixed(2));
 
-  console.log('\nCambiando a estrategia para Germany...');
+  console.log(chalk.bold.green("\nCambiando a estrategia para Germany..."));
   taxCalculator.setStrategy(new GermanyTaxStrategy());
-  console.log('Germany: $', taxCalculator.calculate(100).toFixed(2));
+  console.log("Germany: $", taxCalculator.calculate(100).toFixed(2));
 }
 
 main();
